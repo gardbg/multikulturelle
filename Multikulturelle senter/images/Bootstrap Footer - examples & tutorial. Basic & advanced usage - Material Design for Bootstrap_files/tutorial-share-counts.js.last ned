@@ -1,0 +1,38 @@
+jQuery(document).ready(function() {
+
+  getFbCount();
+
+  function getFbCount() {
+
+    var url = "https://graph.facebook.com/?id=" + window.location.href.split('?')[0];
+    var oldShareCounts = parseInt(shareCountsData.oldShareCounts);
+  
+    jQuery.ajax({
+      url: url,
+      method: "GET"
+    })
+      .done(function(response) {
+  
+        if( isNaN(oldShareCounts) ) {
+  
+          oldShareCounts = 0;
+        }
+  
+        var count = response.share.share_count;
+  
+        count += oldShareCounts > 0 ? oldShareCounts : 0;
+  
+        if (+count >= 10) {
+  
+          jQuery("#fb-share-count").text(count);
+        } else {
+  
+          jQuery("#fb-share-count").remove();
+        }
+      })
+      .fail(function(error) {
+  
+        console.error(error);
+      });
+  }
+});

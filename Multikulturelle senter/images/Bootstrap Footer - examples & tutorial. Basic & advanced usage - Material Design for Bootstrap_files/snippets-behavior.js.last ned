@@ -1,0 +1,523 @@
+(function ($) {
+
+  var latestPackage = {};
+  var packages = [];
+  var tags = [];
+
+  var $openSnippetModal = $('#modalOpenSnippet');
+  var $snippetSettingsModal = $('#modalSnippetSettings');
+  var $technologySelect = $('#snippet-package-technology');
+  var $versionSelect = $('#snippet-package-version');
+  var $typeSelect = $('#snippet-package-type');
+  var $statusCheckbox = $('#snippet-status');
+
+  var pathName = window.location.pathname;
+  var pathParts = pathName.split('/');
+  var forbiddenTechs = ['angular', 'react', 'vue'];
+  if (forbiddenTechs.indexOf(pathParts[1]) === -1 && forbiddenTechs.indexOf(pathParts[2]) === -1 || pathName.indexOf('/docs/jquery') !== -1) {
+
+    registerPrismButton();
+  }
+
+  if (typeof $.fn.materialChip === 'function') {
+
+    initMaterialChips();
+  }
+
+  initFilterBar();
+
+  $('[data-target="#modalSnippetSettings"]').on('click', function loadPackages(e) {
+
+    e.preventDefault();
+
+    showPreloader();
+
+    loadSortedPackages(function () {
+
+      createOptionsSelects();
+
+      hidePreloader();
+    });
+  });
+
+  $('#save-snippet-settings').on('click', function saveSettings(e) {
+
+    e.preventDefault();
+
+    if (!validateCreateForm()) return;
+
+    var $this = $(this);
+
+    showPreloader();
+
+    var technology = encodeURIComponent($technologySelect.val()).toLowerCase();
+    var username = $this.attr('data-user-nicename');
+    var action = $this.attr('data-action');
+    var queryString = buildQueryString(action);
+
+    if( action === 'forum_snippet') {
+
+      window.open('https://mdbootstrap.com/snippets/' + technology + '/' + username + queryString, '_blank');
+
+      hidePreloader();
+      $snippetSettingsModal.modal('hide');
+    } else {
+
+      window.location.assign('/snippets/' + technology + '/' + username + queryString);
+    }
+  });
+
+  $('main').on('click', '.export-to-snippet', function (e) {
+
+    e.preventDefault();
+
+    var $this = $(this);
+    var $navigation = $this.closest('.docs-pills').find('ul');
+
+    if (!$navigation.length) {
+
+      $navigation = $this.closest('.tab-content').siblings('ul');
+    }
+
+    var code = getSnippetCode($navigation);
+
+    showPreloader();
+    $openSnippetModal.modal();
+
+    $.ajax({
+        url: wp_ajaxurl,
+        method: 'POST',
+        data: {
+          action: 'ajax_is_user_logged_in'
+        }
+      })
+      .done(function (response) {
+
+        response = typeof response === 'string' ? JSON.parse(response) : response;
+
+        loadSortedPackages(function (packages) {
+
+          setLatestPackage(packages);
+
+          var snippet = prepareCreatePayload(code);
+
+          if (response.loggedin) {
+
+            saveSnippet(response, snippet);
+          } else {
+
+            saveGuestSnippet(response, snippet);
+          }
+        });
+      })
+      .fail(console.error);
+  });
+
+  $('a.open-snippet').on('click', function closeModal(e) {
+
+    $openSnippetModal.modal('hide');
+  });
+
+  $('.toggle-like').on('click', function () {
+
+    var $this = $(this);
+    var likeCount = parseInt($this.find('.count-like').text());
+    var snippetId = $this.attr('snippet-id');
+    var snippetUsername = $this.attr('snippet-username');
+    var snippetUserId = $this.attr('snippet-user-id');
+    var currentUserId = $this.attr('current-user-id');
+    var likeAction = $this.find('.like-icon').hasClass('far fa-thumbs-up') ? 'add' : 'delete';
+
+    if (currentUserId === snippetUserId) {
+
+      toastr.warning("You can't like your own snippet!", "Oops!");
+      return;
+    }
+
+    if ($this.find('.like-icon').hasClass('far fa-thumbs-up')) {
+
+      $this.find('.like-icon').removeClass('far fa-thumbs-up').addClass('fas fa-thumbs-up');
+      $this.find('.count-like').text(likeCount + 1)
+    } else {
+
+      $this.find('.like-icon').removeClass('fas fa-thumbs-up').addClass('far fa-thumbs-up');
+      $this.find('.count-like').text(likeCount - 1)
+    }
+
+    $this.addClass('disabled');
+
+    $.ajax({
+        url: wp_ajaxurl,
+        method: 'POST',
+        data: {
+          action: 'ajax_is_user_logged_in'
+        }
+      })
+      .done(function (response) {
+
+        response = typeof response === 'string' ? JSON.parse(response) : response;
+
+        var user = response.current_user;
+
+        var token = btoa(user.user_nicename + ':' + user.user_email);
+
+        loadSortedPackages(function (packages) {
+
+          setLatestPackage(packages);
+
+          $.ajax({
+              url: '/api/snippets/' + latestPackage.technology.toLowerCase() + '/' + snippetUsername + '/snippets/like/' + likeAction + '/' + snippetId,
+              method: 'POST',
+              headers: {
+                'Authorization': 'Basic ' + token
+              }
+            })
+            .done(function () {
+
+              $this.removeClass('disabled');
+            })
+            .fail(function (error) {
+
+              if ($this.find('.like-icon').hasClass('far fa-thumbs-up')) {
+
+                $this.find('.like-icon').removeClass('far fa-thumbs-up').addClass('fas fa-thumbs-up');
+                $this.find('.count-like').text(likeCount + 1)
+              } else {
+
+                $this.find('.like-icon').removeClass('fas fa-thumbs-up').addClass('far fa-thumbs-up');
+                $this.find('.count-like').text(likeCount - 1)
+              }
+
+              $this.removeClass('disabled');
+              console.error(error);
+            });
+        });
+      });
+  });
+
+  function setLatestPackage(packages) {
+
+    latestPackage = packages.filter(function (pack) {
+
+      return pack.type === 'PRO' && pack.technology === 'jQuery';
+    })[0];
+  }
+
+  function getSnippetCode($navigation) {
+
+    var code = {
+      html: '',
+      css: '',
+      javascript: ''
+    };
+    $navigation.find('.nav-link').each(function () {
+
+      var $link = $(this);
+      code[$link.text().toLowerCase()] = $('#' + $link.attr('href').split('#')[1]).find('pre').text();
+    });
+
+    return code;
+  }
+
+  function prepareCreatePayload(code) {
+
+    return {
+      packageId: latestPackage.package_id.toString(),
+      title: 'New snippet ' + Date.now().toString().substr(-3),
+      description: 'Forked from ' + window.location.href,
+      html: code.html,
+      css: code.css,
+      js: code.javascript,
+      status: 3
+    };
+  }
+
+  function saveGuestSnippet(user, snippet) {
+
+    var technology = encodeURIComponent(latestPackage.technology).toLowerCase();
+    var username = 'temp';
+    var queryString = '?action=prism_export';
+
+    createGuestSnippet(snippet, function (response) {
+
+      $openSnippetModal.find('a.open-snippet').attr('href', '/snippets/' + technology + '/' + username + '/' + response.insertId + queryString);
+      hidePreloader();
+    });
+  }
+
+  function createGuestSnippet(data, callback) {
+
+    $.ajax({
+      url: '/api/snippets/' + latestPackage.technology.toLowerCase() + '/temp/snippets/temp/create',
+      method: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify(data)
+    }).done(callback).fail(console.error);
+  }
+
+  function saveSnippet(user, snippet) {
+
+    var technology = encodeURIComponent(latestPackage.technology).toLowerCase();
+    var username = user.current_user.user_nicename;
+
+    createSnippet(user.current_user, snippet, function (response) {
+
+      $openSnippetModal.find('a.open-snippet').attr('href', '/snippets/' + technology + '/' + username + '/' + response.insertId);
+      hidePreloader();
+    });
+  }
+
+  function createSnippet(user, data, callback) {
+
+    var token = btoa(user.user_nicename + ':' + user.user_email);
+
+    $.ajax({
+      url: '/api/snippets/' + latestPackage.technology.toLowerCase() + '/' + user.user_nicename + '/snippets/create',
+      method: 'POST',
+      contentType: 'application/json',
+      headers: {
+        'Authorization': 'Basic ' + token
+      },
+      data: JSON.stringify(data)
+    }).done(callback).fail(console.error);
+  }
+
+  function showPreloader() {
+
+    $(".checkout-preloader-container").removeClass('d-none');
+  }
+
+  function hidePreloader() {
+
+    $(".checkout-preloader-container").addClass('d-none');
+  }
+
+  function createOptionsSelects() {
+
+    var technologies = [],
+      versions = [],
+      types = [];
+
+    $technologySelect.empty();
+    $versionSelect.empty();
+    $typeSelect.empty();
+
+    packages.forEach(function (pack) {
+
+      if (technologies.indexOf(pack.technology) === -1) {
+
+        technologies.push(pack.technology);
+        $technologySelect.append('<option>' + pack.technology + '</option>', {
+          value: pack.technology
+        });
+      }
+
+      if (versions.indexOf(pack.version) === -1) {
+
+        versions.push(pack.version);
+        $versionSelect.append('<option>' + pack.version + '</option>', {
+          value: pack.version
+        });
+      }
+
+      if (types.indexOf(pack.type) === -1) {
+
+        types.push(pack.type);
+        var selected = pack.type === 'PRO' ? ' selected ' : '';
+        $typeSelect.append('<option' + selected + '>' + pack.type + '</option>', {
+          value: pack.type
+        });
+      }
+    });
+
+    $typeSelect.materialSelect(); // FIXME: only this one needs it
+  }
+
+  function buildQueryString(action) {
+
+    var queryString = '?' + ( !!action ? 'action=' + action : '' ) +
+      ($statusCheckbox.is(':checked') ? '&status=4' : '') +
+      '&tech=' + encodeURIComponent($technologySelect.val()) +
+      '&ver=' + encodeURIComponent($versionSelect.val()) +
+      '&type=' + encodeURIComponent($typeSelect.val()) +
+      '&title=' + encodeURIComponent($('#snippet-title').val()) +
+      '&desc=' + encodeURIComponent($('#snippet-description').val()) +
+      '&package=' + packages.filter(function (pack) {
+
+        return pack.technology === $technologySelect.val() &&
+          pack.version === $versionSelect.val() &&
+          pack.type === $typeSelect.val()
+      })[0].package_id;
+
+    if (tags.length) {
+
+      queryString += '&tags=' + tags.slice(0, 10).join(',');
+    }
+
+    return queryString;
+  }
+
+  function registerPrismButton() {
+
+    Prism.plugins.toolbar.registerButton('export-to-snippet', function (env) {
+
+      if($(env.element).closest('pre').data('editor') === false) {
+        return;
+      }
+
+      var button = document.createElement('a');
+      button.innerHTML = '<i class="fas fa-image mr-1"></i> Open in MDB Editor';
+      button.classList = 'btn btn-outline-grey btn-sm px-2 waves-effect export-to-snippet';
+
+      return button;
+    })
+
+    $(document).on('DOMNodeInserted', function(e) {
+
+      if( $(e.target).hasClass('toolbar')) {
+
+        if($(e.target).prev().data('editor') === false) {
+
+          return;
+        }
+
+        $(e.target).find('.btn-copy-code').css('right', 175);
+      }
+    });
+
+  }
+
+  function initMaterialChips() {
+
+    var $chips = $('.chips.chips-initial');
+
+    $chips.materialChip({
+      placeholder: 'Max 10 tags with the min length of 2 each',
+      secondaryPlaceholder: '+Tag'
+    });
+
+    $chips.on('chip.add', function (e, chip) {
+
+      var cleanName = _stripTagName(chip.tag);
+
+      $(this).find('div.chip')
+        .filter( function () {
+          return $(this).text() === chip.tag;
+        })
+        .first()
+        .contents()
+        .filter(function() {
+          return (this.nodeType === Node.TEXT_NODE && this.nodeValue.trim() !== "");
+        })
+        .replaceWith(cleanName);
+
+      tags.push(cleanName);
+    });
+
+    $chips.on('chip.delete', function (e, chip) {
+
+      tags = tags.filter(function (tag) {
+        return tag !== chip.tag;
+      });
+    });
+  }
+
+  function _stripTagName(name) {
+
+    return name
+      .trim()
+      .toLowerCase()
+      .replace(/\s/g, '-')
+      .replace(/[^a-z0-9+#.\-]/g, '');
+}
+
+  function initFilterBar() {
+
+    $('#top, #sortby').on('change', function (e) {
+
+      var $this = $(this);
+      var $query = $this.find("option:selected");
+      location = updateUrlParameter(location.href, $this.attr('id'), $query.val())
+    });
+
+    $('#category').on('change', function (e) {
+
+      var $this = $(this);
+      var categoryUrl = $this.find('option:selected').attr('data-url');
+      var queryParams = window.location.search;
+      window.location.href = categoryUrl + queryParams;
+    });
+  }
+
+  function loadSortedPackages(callback) {
+
+    $.ajax({
+      url: '/api/snippets/snippets/packages/read',
+      method: 'GET'
+    }).done(function (response) {
+
+      packages = response
+        .sort(function (a, b) {
+
+          return b.version.localeCompare(a.version, undefined, {
+            numeric: true
+          });
+        });
+
+      callback(packages);
+    }).fail(console.error);
+  }
+
+  function updateUrlParameter(uri, param, value) {
+
+    var indexOfHash = uri.indexOf('#');
+    var hash = indexOfHash === -1 ? '' : uri.substr(indexOfHash);
+    uri = indexOfHash === -1 ? uri : uri.substr(0, indexOfHash);
+
+    var regExp = new RegExp("([?&])" + param + "=.*?(&|$)", "i");
+    var separator = uri.indexOf('?') !== -1 ? "&" : "?";
+
+    if (uri.match(regExp)) {
+
+      uri = uri.replace(regExp, '$1' + param + "=" + value + '$2');
+    } else {
+
+      uri = uri + separator + param + "=" + value;
+    }
+
+    return uri + hash;
+  }
+
+  function validateCreateForm() {
+
+    var $titleInput = $('#snippet-title');
+
+    var technologyValid = $technologySelect.val() !== '';
+    var versionValid = $versionSelect.val() !== '';
+    var typeValid = $typeSelect.val() !== '';
+    var titleValid = $titleInput.val() && $titleInput.val().length > 3  && $titleInput.val().length < 255;
+    var descriptionValid = true;
+    var tagsValid = true;
+
+    var formValid = true;
+
+    $snippetSettingsModal.find('.chips div.chip').each(function(index) {
+
+      var name = $(this).text();
+
+      tagsValid = index < 10 && name.length >= 2 && name.length <= 255;
+    });
+
+    if ( !(technologyValid && versionValid && typeValid && titleValid && descriptionValid && tagsValid) ) {
+
+      toastr['warning']('Please fill in the fields with valid values.');
+
+      formValid = false;
+    }
+
+    $titleInput[(titleValid ? 'removeClass' : 'addClass')]('is-invalid');
+    $('#tags-invalid-feedback')[(tagsValid ? 'addClass' : 'removeClass')]('d-none');
+
+    return formValid;
+  }
+})(jQuery);
