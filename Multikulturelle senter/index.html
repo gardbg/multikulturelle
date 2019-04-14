@@ -111,7 +111,7 @@
     margin-bottom: 30px;
   }  
   .jumbotron {
-    background-color: #0E3642;
+    background-color: #005b96;
     color: #fff;
     padding: 100px 25px;
     font-family: Montserrat, sans-serif;
@@ -205,7 +205,7 @@
   }
   .navbar {
     margin-bottom: 0;
-    background-color: #0E3642;
+    background-color: #005b96;
     z-index: 9999;
     border: 0;
     font-size: 12px !important;
@@ -218,9 +218,9 @@
     color: #fff !important;
   }
   .navbar-nav li a:hover, .navbar-nav li.active a {
-    color: #0E3642 !important;
+    color: black !important;
     background-color: #fff !important;
-    border-bottom: 0.5px solid #0E3642;
+    border-bottom: none;
   }
   .navbar-default .navbar-toggle {
     border-color: transparent;
@@ -229,7 +229,7 @@
   footer .glyphicon {
     font-size: 20px;
     margin-bottom: 20px;
-    color: #f4511e;
+   
   }
   .slideanim {visibility:hidden;}
   .slide {
@@ -301,6 +301,17 @@ h1#cdheader {
   padding: 3em;
 }
 
+#facebook {
+  background-color: #3b5998 !important;
+  color: #3b5998 !important;
+  left: 0px;
+  font-size: 44px;
+}
+
+#hamburger {
+  background-color: white !important;
+}
+
 
   
 
@@ -353,7 +364,7 @@ h1#cdheader {
 <nav class="navbar navbar-default navbar-fixed-top">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar" id="hamburger">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>                        
@@ -363,12 +374,13 @@ h1#cdheader {
     <div class="collapse navbar-collapse" id="myNavbar">
       <ul class="nav navbar-nav navbar-right">
         <li><a href="#hjem">Hjem</a></li>
+        <li><a href="#omoss">Om oss</a></li>
         <li><a href="#driftsomrade">Driftsområde</a></li>
         <li><a href="#prosjekter">Prosjekter</a></li>
         <li><a href="#medlemsregister">Bli medlem</a></li>
         <li><a href="#samarbeidspartnere">Samarbeidspartnere</a></li>
         <li><a href="#kontakt">Kontakt oss</a></li>
-        <a href="#"><i class="fa fa-facebook-f"></i></a>
+        <a href="https://www.facebook.com/Multikulturell-Senter-i-Norge-265374384382485/"><i class="fa fa-facebook-f"></i></a>
       </ul>
     
     </div>
@@ -376,7 +388,8 @@ h1#cdheader {
 </nav>
 
 <div class="jumbotron text-center">
-  <h1>Multikulturelle senter i Oslo</h1> 
+  <h1>Multikulturelle senter i Norge</h1> 
+  <h1>(MKS)</h1>
   </div>
 
 <!-- Container (hjem) -->
@@ -402,28 +415,28 @@ h1#cdheader {
     </div>
   </div>
   
-  <div class="container-fluid bg-grey">
+  <div class="container-fluid" id="omoss">
     <div class="row">
       <div class="col-sm-4">
-        <h4 class="slideanim">Alle for Norge, norge for alle!</h4>
-<img src="images/logo.png" class="slideanim">
+        <h4 class="slideanim"><b>ALLE FOR NORGE, NORGE FOR ALLE</b></h4>
+<img src="images/logo1.png" class="slideanim" style="width: 90%;">
       </div>
       <div class="col-sm-8">
         <h2>Om oss</h2><br>
         <p>Vi er et mulikulturell senter i Norge, startet etableringen i slutten av det året 2018 i Oslo.
           Vi satser på multiklulturell orientering av befolkningen i landet.
-          Orienteringen vår omhandler kulturell mangfold og søker å bli inkludert og inkludere, bli integrert og
+          Doktrinen vår handler om kulturell mangfold og søker å bli inkludert og inkludere, bli integrert og
           integrere alle medlemmer av samfunnet med hensyn til kulturell bakgrunn.
-          Den er en orientering som trenger og sikrer rettferdighet og like mulighet for hvert medlem av samfunnet
+          Det er en doktrine som trenger og sikrer rettferdighet og like muligheter for hvert medlem av samfunnet
           eller landet.
           <br><br>
           Den handler om anerkjennelse og aksept av variasjon og frihet i forhold mellom kulturer.
-          Den er opptatt av inkludering, integrering, likstilling, deltakelse, åpenhet, rettferdighet, frihet, fred,
+          Den er opptatt av likestilling, deltakelse, åpenhet, rettferdighet, frihet, fred,
           kunnskap, vennskap og kulturell rikdom, osv.
           Vi satser på kontakt mellom kulturer med hensyn til etablering og utvikling av felles prosjekter og arenaer
           for deltakelse og aktivitet.
-          Vi vil motarbeide ekskludering og diskriminasjon i relasjonen mellom befolkningen, og vil frembringe
-          samarbeid og samråd relatert til ulike prosjekter i felleskap for bedre solidaritet blant befolkningen.</p>
+          Vi vil motarbeide ekstremisme, ekskludering og diskriminasjon i relasjonen mellom befolkningen, og vil utvikle felles prosjekter i
+          samarbeid med de interesserte organer i felleskap. Vi satser på å frembringe bedre solidaritet blant befolkningen.</p>
       </div>
     </div>
   </div>
@@ -460,12 +473,12 @@ h1#cdheader {
       <div class="col-sm-4">
         <img src="https://img.icons8.com/dotty/50/000000/idea-sharing.png">
         <h4>Kunnskap</h4>
-        <p>Spredning av Kunnskap om flerkulturell visdom og lærdom</p>
+        <p>Spredning av kunnskap om flerkulturell orientering, visdom og lærdom</p>
       </div>
       <div class="col-sm-4">
         <img src="https://img.icons8.com/ios/50/000000/scales.png">
         <h4>Rettsvesen</h4>
-        <p>Spredning av kunnskap om Norsk helsevesen, rettsvesen og offentlig struktur<br>
+        <p>Spredning av kunnskap om Norsk helsevesen, rettsvesen og offentlig struktur
         til innvandrere</p>
       </div>
     </div>
@@ -524,7 +537,7 @@ h1#cdheader {
   <br>
   
   <!-- Container (Portfolio Section) -->
-  <div id="prosjekter" class="container text-center bg-grey">
+  <div id="prosjekter" class="container text-center">
     <h2>Prosjekter</h2><br>
     <h4></h4>
     <div class="row text-center slideanim">
@@ -554,6 +567,13 @@ h1#cdheader {
         </div>
       </div>
       
+      <div class="row text-center">
+        <div class="col-md-12">
+          Følg oss på facebook for å få med deg alle våre kommende eventer!<br><a href="https://www.facebook.com/Multikulturell-Senter-i-Norge-265374384382485/"><i class="fa fa-facebook-f" id="facebook"></i></a>
+          
+
+        </div>
+      </div>
       
     </div><br>
     
@@ -612,9 +632,10 @@ h1#cdheader {
             <button class="btn btn-lg" type ="button" data-toggle="collapse" href="#medlemknapp" aria-expanded="false" aria-controls="medlemknapp">Bli medlem nå!</button>
             <div class="collapse" id="medlemknapp">
               <div class="card card-body">
-                Betal med vipps til nummer: 
+                <b>Betal med vipps til nummer:         <p><span class="glyphicon glyphicon-phone"></span> +47 902 67 944</p></b>
+
                 <br>
-                Betal med bankoverføring til kontonummer:
+                <b> Betal med bankoverføring til kontonummer: 6060.11.36778. Nordeabank i Oslo.</b>
               </div>
             </div>
           </div>
@@ -631,12 +652,12 @@ h1#cdheader {
     <br>
     <div class="row slideanim">
       <div class="col-sm-6">
-        <span><img src="images/oslokom.jpg" alt="oslo_kommune" style="width: 400px; height: 225px;"></span>
+        <span><img src="images/oslokom.jpg" alt="oslo_kommune" style="width: 300px; height: 180px;"></span>
         <h4>Oslo Kommune</h4>
         <p></p>
       </div>
       <div class="col-sm-6">
-        <span><img src="images/nav_pos_logo_CMYK_stor.jpg" alt="nav_oslo" style="width: 400px; height: 225px;"></span>
+        <span><img src="images/nav_pos_logo_CMYK_stor.jpg" alt="nav_oslo" style="width: 300px; height: 180px;"></span>
         <h4>Nav Oslo</h4>
         <p></p>
       </div>
@@ -651,24 +672,26 @@ h1#cdheader {
     <h2 class="text-center">Kontakt oss</h2>
     <div class="row">
       <div class="col-sm-5">
-        <p>Kontakt oss, så vil vi svare så fort vi kan!</p>
+        <p><b>Kontakt oss, så vil vi svare så fort vi kan!</b></p>
         <p><span class="glyphicon glyphicon-map-marker"></span> Agmund boltsvei 59, 0664 Oslo</p>
         <p><span class="glyphicon glyphicon-phone"></span> +47 902 67 944</p>
-        <p><span class="glyphicon glyphicon-envelope"></span> majestet1@yahoo.no</p>
+        <p><span class="glyphicon glyphicon-envelope"></span> post@multikulturellsenter.com</p>
       </div>
       <div class="col-sm-7 slideanim">
         <div class="row">
           <div class="col-sm-6 form-group">
-            <input class="form-control" id="name" name="name" placeholder="Name" type="text" required>
+            <input class="form-control" id="name" name="name" placeholder="Navn.." type="text" required>
           </div>
           <div class="col-sm-6 form-group">
-            <input class="form-control" id="email" name="email" placeholder="Email" type="email" required>
+            <input class="form-control" id="email" name="email" placeholder="Epost.." type="email" required>
           </div>
         </div>
-        <textarea class="form-control" id="comments" name="comments" placeholder="Comment" rows="5"></textarea><br>
+        <textarea class="form-control" id="comments" name="comments" placeholder="Kommentar.." rows="5"></textarea><br>
         <div class="row">
           <div class="col-sm-12 form-group">
-            <button class="btn btn-default pull-right" type="submit">Send</button>
+              
+      
+
           </div>
         </div>
       </div>
@@ -691,13 +714,11 @@ h1#cdheader {
             </div>
             
             <div class="footer-copyright">
-                <p>Made by Gard & Lars <br>
-                  Made with bootstrap
-                </p>
+                
             </div>
         </footer>
 
-
+    
 <script>
 $(document).ready(function(){
   // Add smooth scrolling to all links in navbar + footer link
@@ -767,9 +788,9 @@ var x = setInterval(function() {
 }, 1000);
 
 </script>
-
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script> 
 
 </body>
 </html>
