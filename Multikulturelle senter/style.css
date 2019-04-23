@@ -1,5 +1,5 @@
 #myFooter {
-    background-color: #0E3642;
+    background-color: #005b96;
     color: white;
     padding-top: 20px;
 }
@@ -16,7 +16,7 @@
 }
 
 #myFooter .footer-copyright {
-    background-color: #0E3642;
+    background-color: #005b96;
     padding-top: 3px;
     padding-bottom: 3px;
     text-align: center;
@@ -105,11 +105,11 @@
     background-color: #f6f6f6;
   }
   .logo-small {
-    color: #0E3642;
+    color: #005b96;
     font-size: 50px;
   }
   .logo {
-    color: #0E3642;
+    color: #005b96;
     font-size: 200px;
   }
   .thumbnail {
@@ -127,7 +127,7 @@
     color: white;
   }
   .carousel-indicators li {
-    border-color: #0E3642;
+    border-color: #005b96;
   }
   .carousel-indicators li.active {
     background-color: white;
@@ -143,7 +143,7 @@
     font-style: normal;
   }
   .panel {
-    border: 1px solid #0E3642; 
+    border: 1px solid #005b96; 
     border-radius:0 !important;
     transition: box-shadow 0.5s;
   }
@@ -151,13 +151,13 @@
     box-shadow: 5px 0px 40px rgba(0,0,0, .2);
   }
   .panel-footer .btn:hover {
-    border: 1px solid #0E3642;
+    border: 1px solid #005b96;
     background-color: #fff !important;
-    color: #0E3642;
+    color: #005b96;
   }
   .panel-heading {
     color: #fff !important;
-    background-color: #0E3642 !important;
+    background-color: #005b96 !important;
     padding: 25px;
     border-bottom: 1px solid transparent;
     border-top-left-radius: 0px;
@@ -179,7 +179,7 @@
   }
   .panel-footer .btn {
     margin: 15px 0;
-    background-color: #0E3642;
+    background-color: #005b96;
     color: #fff;
   }
   .panel-body p {
@@ -271,12 +271,12 @@ h1#cdheader {
 .cdvalue {
   font-size: 3em;
   font-weight: bold;
-  color: #0E3642;
+  color: #67809f;
   margin: 0.2em 0 0 0;
 }
 .cdlabel {
   margin-bottom: 1em;
-  color: #0E3642;
+  color: #67809f;
 }
 .cdmessage{
   width: 23em;
